@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DiplomaProject</string>
+    <string name="reader_service">ScreenReader Service</string>
+    <string name="service_description">It will be very thrilling!!!</string>
+</resources>
