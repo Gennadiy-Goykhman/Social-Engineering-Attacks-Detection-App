@@ -1,6 +1,7 @@
 package com.example.diplomaproject
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -30,24 +31,13 @@ import com.example.diplomaproject.ui.screens.destinations.HomeDestination
 import com.example.diplomaproject.ui.screens.featureStateMock
 import com.example.diplomaproject.ui.screens.switchFunctionStateMock
 import com.example.diplomaproject.ui.theme.DiplomaProjectTheme
-import org.pytorch.IValue
-import org.pytorch.LiteModuleLoader
-import org.pytorch.Module
-import org.pytorch.Tensor
-import java.io.File
-import java.io.FileOutputStream
 
 
-class MainActivity : ComponentActivity() {
+internal class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupUI()
         checkAccessibility()
-        predict(
-            intArrayOf(
-                17, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-            ).map { it.toFloat() }.toFloatArray()
-        )
     }
 
     override fun onResume() {
@@ -83,43 +73,6 @@ class MainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         window.statusBarColor = this.resources.getColor(R.color.background_priomary)
-    }
-
-    private fun predict(features: FloatArray): Float {
-        val numFeatures = 19
-        val module = loadModule("url_classifier_first_version.pk")
-        // 1. Создание тензора входных данных
-        val inputTensor = Tensor.fromBlob(features, longArrayOf(1, numFeatures.toLong()))
-
-        // 2. Выполнение инференса
-        val outputTensor = module?.forward(IValue.from(inputTensor))?.toTensor()
-
-        // 3. Извлечение результата
-        val scores = outputTensor?.dataAsFloatArray
-        val probability = scores?.get(0) ?: 0.0f  // Возвращаем вероятность
-
-        return probability
-    }
-
-    private fun loadModule(modelName: String): Module? {
-        var module: Module? = null
-        val inputStream = assets.open(modelName)
-        val file = File(cacheDir, modelName)
-
-        FileOutputStream(file).use { outputStream ->
-            val buffer = ByteArray(4 * 1024)
-            var read: Int
-
-            while (inputStream.read(buffer).also { read = it } != -1) {
-                outputStream.write(buffer, 0, read)
-            }
-
-            outputStream.flush()
-        }
-
-
-        module = LiteModuleLoader.load(file.absolutePath)
-        return  module
     }
 }
 
