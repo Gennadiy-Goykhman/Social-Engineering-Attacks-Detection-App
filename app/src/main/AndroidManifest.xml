@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
+        android:appCategory="accessibility"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,7 +14,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DiplomaProject"
-        tools:targetApi="31">
+        tools:targetApi="35">
+        <receiver
+            android:name=".receiver.TestReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <data android:scheme="http" />-->
+<!--                <data android:scheme="https" />-->
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".service.TestForegroundService"
+            android:foregroundServiceType="dataSync"
+            android:exported="true" >
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -22,41 +42,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".service.TestAccessibilityService"
             android:exported="false"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:label="@string/reader_service">
+            android:label="@string/reader_service"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
             <meta-data
                 android:name="android.accessibilityservice"
-                android:resource="@xml/test_accessibility_service_config"
-                />
+                android:resource="@xml/test_accessibility_service_config" />
         </service>
-<!--        <receiver-->
-<!--            android:name=".receiver.TestReceiver"-->
-<!--            android:directBootAware="true"-->
-<!--            android:permission=""-->
-<!--            android:process="">-->
-<!--            <intent-filter>-->
-<!--                <action android:name=""/>-->
-<!--                <category />-->
-<!--                <data />-->
-<!--                <uri-relative-filter-group/>-->
-<!--            </intent-filter>-->
-<!--            <meta-data-->
-<!--                android:name=""-->
-<!--                android:resource=""-->
-<!--                android:value=""-->
-<!--                />-->
-<!--            <property-->
-<!--                android:name=""-->
-<!--                android:resource=""-->
-<!--                android:value=""-->
-<!--                />-->
-<!--        </receiver>-->
     </application>
 
 </manifest>
