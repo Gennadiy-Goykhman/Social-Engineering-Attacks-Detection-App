@@ -2,7 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <category android:name="android.intent.category.BROWSABLE"/>
+            <data android:scheme="http"/>
+        </intent>
+    </queries>
 
     <application
         android:appCategory="accessibility"
@@ -15,22 +29,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DiplomaProject"
         tools:targetApi="35">
-        <receiver
-            android:name=".receiver.TestReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <data android:scheme="http" />-->
-<!--                <data android:scheme="https" />-->
-            </intent-filter>
-        </receiver>
         <service
             android:name=".service.TestForegroundService"
-            android:foregroundServiceType="dataSync"
-            android:exported="true" >
-        </service>
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"
@@ -40,6 +42,27 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DetectActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".NotificationActivity"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.diplomaproject.action.NOTIFY" />
             </intent-filter>
         </activity>
 

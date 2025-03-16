@@ -1,5 +1,44 @@
 <resources>
-    <string name="app_name">DiplomaProject</string>
-    <string name="reader_service">ScreenReader Service</string>
-    <string name="service_description">It will be very thrilling!!!</string>
+    <string name="app_name">SEADA</string>
+    <string name="reader_service">Detection Service</string>
+    <string name="service_description">This service is aimed at detecting attack scenarios using
+        social engineering methods by analysing content.\nThe information collected by this service
+        is processed locally and is not transmitted to third parties</string>
+    <string name="features_title">Features</string>
+    <string name="app_info_title">@string/app_name</string>
+    <string name="home_title_section">Home</string>
+    <string name="about_app_title_section">Home</string>
+    <string name="about_app_title">About app</string>
+    <string name="app_version_subtitle">Version 1.0.1 (beta)</string>
+    <string name="about_app_description">SEADA - Social Engineering Attacks Detection App. This application is aimed at detecting attempts by
+        attackers to launch a social engineering attack on a user\'s device.\nThese methodologies
+        contain vectors of attacks using scam, phishing, etc.\nThe application ensures its
+        performance by evaluating the content with which the user interacts. Any information
+        gathered in the process is not shared externally.</string>
+    <string name="additional_info_title">Additional info</string>
+    <string name="licensing_item">Licensing</string>
+    <string name="permissions_item">Permissions</string>
+    <string name="accessibility_item">Accessibility</string>
+    <string name="default_browser_notification">Make SEADA the default browser for full functionality</string>
+    <string name="detection_service_notification_title">Detecting phishing</string>
+    <string name="detection_service_notification_description">Analyse an online resource for
+        phishing attempts…</string>
+    <string name="attack_message_button">OK</string>
+    <string name="attack_message_title">Warning of a possible attack</string>
+    <string name="attack_message">You may be subject to the actions of malicious people.\nThe text
+        below contains suspicious information or is a phishing scam</string>
+    <string-array name="features_titles">
+        <item>Proactive detection</item>
+        <item>Active detection</item>
+        <item>Spam protection</item>
+        <item>Phishing protection</item>
+        <item>Background mode</item>
+    </string-array>
+    <string-array name="features_descriptions">
+        <item>This system detects possible suspicious messages before you interact with them</item>
+        <item>Alerting the user of a threat if the user has already fallen under an attack vector</item>
+        <item>Detecting deliberately false messages and warning the user about them</item>
+        <item>The software can detect phishing sites and report them to the user</item>
+        <item>The application works in the background without distracting the user</item>
+    </string-array>
 </resources>

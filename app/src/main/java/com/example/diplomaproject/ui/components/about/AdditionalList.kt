@@ -113,5 +113,5 @@ fun AdditionalListPreview() {
 
 data class AdditionalItemInfo(
     val text: String,
-    val onClick: () -> Unit
+    val onClick: () -> Unit = {}
 )

@@ -1,5 +1,6 @@
 package com.example.diplomaproject.data.utils
 
+import com.example.diplomaproject.data.services.url.UrlFeatureExtruder
 import java.net.URL
 
 inline fun retrieveUrl(
@@ -13,8 +14,8 @@ inline fun URL.countSymbol(symbolProvider: () -> Char) = this.toString()
     .count { it == symbolProvider() }
 
 
-fun URL.getFeaturesParams(
-    featuresExtruder: UrlFeatureExtruder = UrlClassifierFeaturesExtruder
-): FloatArray {
+fun <T> URL.getFeaturesParams(
+    featuresExtruder: UrlFeatureExtruder<T>
+): T {
     return featuresExtruder.extrude(this)
 }

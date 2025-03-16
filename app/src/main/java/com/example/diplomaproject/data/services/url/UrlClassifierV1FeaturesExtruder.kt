@@ -1,12 +1,9 @@
-package com.example.diplomaproject.data.utils
+package com.example.diplomaproject.data.services.url
 
+import com.example.diplomaproject.data.utils.countSymbol
 import java.net.URL
 
-interface UrlFeatureExtruder {
-    fun extrude(url: URL): FloatArray
-}
-
-object UrlClassifierFeaturesExtruder: UrlFeatureExtruder {
+object UrlClassifierV1FeaturesExtruder: UrlFeatureExtruder<FloatArray> {
     private val lengthDetector: URL.() -> Float = { this.toString().length.toFloat() }
     private val dotsCount: URL.() -> Float = { countSymbolF { '.' } }
     private val hyphenCount: URL.() -> Float = { countSymbolF { '-' } }
