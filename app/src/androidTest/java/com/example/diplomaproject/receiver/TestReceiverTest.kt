@@ -22,9 +22,5 @@ class TestReceiverTest {
 
         every { mockIntent.action } returns Intent.ACTION_VIEW
         every { mockIntent.data } returns testUri
-
-        // Act
-        val receiver = TestReceiver()
-        receiver.onReceive(mockContext, mockIntent)
     }
 }

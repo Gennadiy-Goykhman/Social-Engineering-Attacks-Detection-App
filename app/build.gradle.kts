@@ -18,7 +18,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+//    splits {
+//        abi {
+//            isEnable = true
+//            reset()
+//            include("arm64-v8a")
+//            isUniversalApk = false
+//        }
+//    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -38,6 +45,12 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            merges.add("META-INF/LICENSE.md")
+            merges.add("META-INF/LICENSE-notice.md")
+        }
+    }
 }
 
 dependencies {
@@ -53,11 +66,9 @@ dependencies {
     implementation(libs.kotlinx.serialization)
     implementation(libs.pytorch.android.lite)
     implementation(libs.pytorch.android.torchvision.lite)
-    androidTestImplementation(libs.pytorch.android.lite)
-    androidTestImplementation(libs.pytorch.android.torchvision.lite)
     testImplementation(libs.junit)
-    androidTestImplementation("io.mockk:mockk-android:1.13.17")
-    androidTestImplementation("io.mockk:mockk-agent:1.13.17")
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

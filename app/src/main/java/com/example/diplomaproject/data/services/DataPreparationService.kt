@@ -1,4 +1,4 @@
-package com.example.diplomaproject.data
+package com.example.diplomaproject.data.services
 
 import com.example.diplomaproject.data.model.PreparedData
 import org.pytorch.IValue
@@ -9,6 +9,15 @@ internal object DataPreparationService {
         return PreparedData(
             arrayOf(
                 IValue.from(Tensor.fromBlob(features, longArrayOf(1, features.size.toLong())))
+            )
+        )
+    }
+
+    fun prepareData(features: LongArray): PreparedData {
+        return PreparedData(
+            arrayOf(
+                IValue.from(Tensor.fromBlob(features.map { it.toFloat() }.toFloatArray(),
+                    longArrayOf(1, features.size.toLong())))
             )
         )
     }
