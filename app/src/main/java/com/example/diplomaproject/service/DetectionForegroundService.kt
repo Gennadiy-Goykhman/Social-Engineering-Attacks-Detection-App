@@ -17,12 +17,17 @@ import com.example.diplomaproject.data.utils.notifyResult
 import com.example.diplomaproject.data.utils.prepareData
 import com.example.diplomaproject.data.utils.retrieveUrl
 import com.example.diplomaproject.service.utils.log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URL
-import kotlin.concurrent.thread
 
 
 class DetectionForegroundService: Service() {
     private val channelId = "${DetectionAccessibilityService::class.simpleName}Channel"
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
@@ -67,13 +72,15 @@ class DetectionForegroundService: Service() {
     }
 
     private fun detect(url: URL, context: Context, features: LongArray) {
-        detectionScope {
-            prepareData(features)
-            detect(context)
-            notifyResult(url, context) {
-                thread {
-                    Thread.sleep(5000)
-                    stopSelf()
+        coroutineScope.launch {
+            delay(2000)
+            detectionScope {
+                prepareData(features)
+                detect(context)
+                withContext(Dispatchers.Main) {
+                    notifyResult(url, context) {
+                        stopSelf()
+                    }
                 }
             }
         }
