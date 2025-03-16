@@ -18,6 +18,7 @@ import com.example.diplomaproject.data.utils.prepareData
 import com.example.diplomaproject.data.utils.retrieveUrl
 import com.example.diplomaproject.service.utils.log
 import java.net.URL
+import kotlin.concurrent.thread
 
 
 class DetectionForegroundService: Service() {
@@ -70,7 +71,10 @@ class DetectionForegroundService: Service() {
             prepareData(features)
             detect(context)
             notifyResult(url, context) {
-                stopSelf()
+                thread {
+                    Thread.sleep(5000)
+                    stopSelf()
+                }
             }
         }
     }
