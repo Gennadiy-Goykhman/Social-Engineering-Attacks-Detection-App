@@ -20,8 +20,8 @@ import com.example.diplomaproject.service.utils.log
 import java.net.URL
 
 
-class TestForegroundService: Service() {
-    private val channelId = "${TestAccessibilityService::class.simpleName}Channel"
+class DetectionForegroundService: Service() {
+    private val channelId = "${DetectionAccessibilityService::class.simpleName}Channel"
 
     override fun onCreate() {
         super.onCreate()
@@ -62,7 +62,7 @@ class TestForegroundService: Service() {
         val url = retrieveUrl(textProvider)
         val features = url.getFeaturesParams(UrlClassifierV2FeaturesExtruder)
         detect(url, this, features)
-        log<TestAccessibilityService>(textProvider)
+        log<DetectionAccessibilityService>(textProvider)
     }
 
     private fun detect(url: URL, context: Context, features: LongArray) {

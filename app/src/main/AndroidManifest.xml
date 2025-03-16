@@ -30,7 +30,7 @@
         android:theme="@style/Theme.DiplomaProject"
         tools:targetApi="35">
         <service
-            android:name=".service.TestForegroundService"
+            android:name=".service.DetectionForegroundService"
             android:foregroundServiceType="specialUse"
             android:exported="false" />
 
@@ -67,7 +67,7 @@
         </activity>
 
         <service
-            android:name=".service.TestAccessibilityService"
+            android:name=".service.DetectionAccessibilityService"
             android:exported="false"
             android:label="@string/reader_service"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

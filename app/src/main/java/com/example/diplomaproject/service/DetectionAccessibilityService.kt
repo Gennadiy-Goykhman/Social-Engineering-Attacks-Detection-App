@@ -20,7 +20,7 @@ import com.example.diplomaproject.data.utils.retrieveUrl
 import com.example.diplomaproject.service.utils.log
 import java.net.URL
 
-internal class TestAccessibilityService : AccessibilityService() {
+internal class DetectionAccessibilityService : AccessibilityService() {
     private companion object {
         const val MIN_MESSAGE_LENGTH = 10
     }
@@ -60,18 +60,18 @@ internal class TestAccessibilityService : AccessibilityService() {
 
     private fun String.processText() {
         if (URLUtil.isValidUrl(this)) {
-            analyzeUrl(this@TestAccessibilityService) { this }
+            analyzeUrl(this@DetectionAccessibilityService) { this }
         } else if (this.length >= MIN_MESSAGE_LENGTH) {
-            detectSpam(this@TestAccessibilityService, this)
+            detectSpam(this@DetectionAccessibilityService, this)
         }
-        log<TestAccessibilityService>{ this }
+        log<DetectionAccessibilityService>{ this }
     }
 
     private inline fun analyzeUrl(context: Context, textProvider: () -> String) {
         val url = retrieveUrl(textProvider)
         val features = url.getFeaturesParams(UrlClassifierV2FeaturesExtruder)
         detectPhishing(url, context, features)
-        log<TestAccessibilityService>(textProvider)
+        log<DetectionAccessibilityService>(textProvider)
     }
 
     private fun detectSpam(context: Context, text: String) {
