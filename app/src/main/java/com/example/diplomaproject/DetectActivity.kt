@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.example.diplomaproject.service.TestForegroundService
+import com.example.diplomaproject.service.DetectionForegroundService
 
 internal class DetectActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +15,7 @@ internal class DetectActivity: ComponentActivity() {
     }
 
     private fun startAnalyzing() {
-        val startIntent = Intent(this, TestForegroundService::class.java).apply {
+        val startIntent = Intent(this, DetectionForegroundService::class.java).apply {
             data = intent.data
         }
         startForegroundService(startIntent)
