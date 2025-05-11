@@ -1,13 +1,17 @@
 package com.example.diplomaproject
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -18,12 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.diplomaproject.data.model.ModelVersions
-import com.example.diplomaproject.data.services.DataPreparationService
-import com.example.diplomaproject.data.services.spam.SpamDetectionService
 import com.example.diplomaproject.ui.components.about.AdditionalItemInfo
 import com.example.diplomaproject.ui.components.common.BottomNavigationBar
 import com.example.diplomaproject.ui.components.common.BottomNavigationItem
@@ -33,17 +35,25 @@ import com.example.diplomaproject.ui.screens.AboutScreen
 import com.example.diplomaproject.ui.screens.AdditionalListInfo
 import com.example.diplomaproject.ui.screens.FeaturesListState
 import com.example.diplomaproject.ui.screens.HomeScreen
-import com.example.diplomaproject.ui.screens.aboutAppInfoMock
-import com.example.diplomaproject.ui.screens.additionalListInfoMock
 import com.example.diplomaproject.ui.screens.destinations.AboutAppDestination
 import com.example.diplomaproject.ui.screens.destinations.HomeDestination
-import com.example.diplomaproject.ui.screens.featureStateMock
 import com.example.diplomaproject.ui.screens.switchFunctionStateMock
 import com.example.diplomaproject.ui.theme.DiplomaProjectTheme
 import com.example.diplomaproject.ui.theme.TextPrimary
 
 
 internal class MainActivity : ComponentActivity() {
+
+    private val permissions = listOf(
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.READ_CALL_LOG,
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.MODIFY_AUDIO_SETTINGS
+    )
+    private val permissionsHandler = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted -> if (!isGranted) checkPermissions() else return@registerForActivityResult}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupUI()
@@ -52,7 +62,17 @@ internal class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        checkPermissions()
         checkAccessibility()
+    }
+
+    private fun checkPermissions() {
+        permissions
+            .filter { ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED }
+            .forEach {
+                permissionsHandler.launch(it)
+                return
+            }
     }
 
     private fun checkAccessibility() {
@@ -64,6 +84,8 @@ internal class MainActivity : ComponentActivity() {
         }
 
         if (accessEnabled == 1) return
+
+        Toast.makeText(this, getString(R.string.enable_detection_service), Toast.LENGTH_LONG).show()
         val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)

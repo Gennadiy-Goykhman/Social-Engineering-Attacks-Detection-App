@@ -16,6 +16,12 @@ import com.example.diplomaproject.data.services.DataPreparationService
 import com.example.diplomaproject.data.services.spam.SpamDetectionService
 import com.example.diplomaproject.data.services.spam.VocabularyProvider
 import com.example.diplomaproject.data.services.url.UrlDetectionService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 fun DetectionFlowScope.prepareData(context: Context, text: String) {
     val vocab = VocabularyProvider.getVocabulary(context)
@@ -75,35 +81,53 @@ fun <T> DetectionFlowScope.notifyResultWithToast(data: T, context: Context, onNo
     onNotify?.invoke()
 }
 
-fun <T> DetectionFlowScope.notifyResult(data: T, context: Context, onNotify: (() -> Unit)? = null) {
-    val result = detectionContext.result?.result as? Float ?: return
-    if (result < 0.5) {
-        Log.i(
-            "DETECTION_FLOW_SCOPE",
-            "Result is ${detectionContext.result?.result}. It is not critical value"
-        )
-        onNotify?.invoke()
-        return
-    }
+private val notifyMutex = Mutex(false)
 
-    val intent = Intent(context, NotificationActivity::class.java).apply {
-        val bundle = bundleOf("INPUT_DATA" to data.toString())
-        putExtras(bundle)
-        addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
-        addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-    }
+suspend fun <T> DetectionFlowScope.notifyResult(
+    data: T,
+    context: Context,
+    relaxTimeMillis: Long = 3000,
+    onNotify: (() -> Unit)? = null
+) {
+    notifyMutex.withLock {
+        val result = detectionContext.result?.result as? Float ?: return
+        if (result < 0.5) {
+            Log.i(
+                "DETECTION_FLOW_SCOPE",
+                "Result is ${detectionContext.result?.result}. It is not critical value"
+            )
+            onNotify?.invoke()
+            return
+        }
 
-    ContextCompat.startActivity(context, intent, null)
-    onNotify?.invoke()
+        withContext(Dispatchers.Main) {
+            val intent = Intent(context, NotificationActivity::class.java).apply {
+                val bundle = bundleOf("INPUT_DATA" to data.toString())
+                putExtras(bundle)
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            }
+
+            ContextCompat.startActivity(context, intent, null)
+            onNotify?.invoke()
+        }
+
+        delay(relaxTimeMillis)
+    }
 }
 
 fun detectionScopeBuilder() = object : DetectionFlowScope {
     override val detectionContext: DetectionFlowContext = DetectionFlowContext()
 }
 
-inline fun detectionScope(actions: DetectionFlowScope.() -> Unit) {
+suspend inline fun detectionScope(
+    withCoroutineContext: CoroutineContext =  Dispatchers.Default,
+    crossinline actions: suspend DetectionFlowScope.() -> Unit,
+) {
     val scope = detectionScopeBuilder()
-    scope.actions()
+    withContext(withCoroutineContext) {
+        scope.actions()
+    }
 }
 
 private fun DetectionResult<Float>.prepareResult(model: ModelVersions): DetectionResult<Float> {

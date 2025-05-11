@@ -1,4 +1,4 @@
-package com.example.diplomaproject.service
+package com.example.diplomaproject.service.detection
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
@@ -17,13 +17,29 @@ import com.example.diplomaproject.data.utils.getFeaturesParams
 import com.example.diplomaproject.data.utils.notifyResult
 import com.example.diplomaproject.data.utils.prepareData
 import com.example.diplomaproject.data.utils.retrieveUrl
-import com.example.diplomaproject.service.utils.log
+import com.example.diplomaproject.service.utils.loge
+import com.example.diplomaproject.service.utils.logi
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.net.URL
 
 internal class DetectionAccessibilityService : AccessibilityService() {
     private companion object {
         const val MIN_MESSAGE_LENGTH = 10
     }
+
+
+
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
+        loge<DetectionAccessibilityService> {
+            """Exception occurred ${exception.message} 
+                |${exception.stackTraceToString()}
+            """.trimMargin()
+        }
+    })
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -37,6 +53,7 @@ internal class DetectionAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event?.run {
             text.joinToString { "" }.processText()
+            contentDescription?.toString()?.processText()
 
             source?.run {
                 text?.toString()?.processText()
@@ -49,8 +66,6 @@ internal class DetectionAccessibilityService : AccessibilityService() {
                 contentDescription?.toString()?.processText()
                 hintText?.toString()?.processText()
             }
-
-            contentDescription?.toString()?.processText()
         }
     }
 
@@ -58,23 +73,23 @@ internal class DetectionAccessibilityService : AccessibilityService() {
         Toast.makeText(this, getString(R.string.default_browser_notification), Toast.LENGTH_LONG).show()
     }
 
-    private fun String.processText() {
-        if (URLUtil.isValidUrl(this)) {
-            analyzeUrl(this@DetectionAccessibilityService) { this }
-        } else if (this.length >= MIN_MESSAGE_LENGTH) {
-            detectSpam(this@DetectionAccessibilityService, this)
+    private fun String.processText() = coroutineScope.launch(SupervisorJob()) {
+        if (URLUtil.isValidUrl(this@processText)) {
+            analyzeUrl(this@DetectionAccessibilityService) { this@processText }
+        } else if (this@processText.length >= MIN_MESSAGE_LENGTH) {
+            detectSpam(this@DetectionAccessibilityService, this@processText)
         }
-        log<DetectionAccessibilityService>{ this }
+        logi<DetectionAccessibilityService> { this@processText }
     }
 
-    private inline fun analyzeUrl(context: Context, textProvider: () -> String) {
+    private suspend inline fun analyzeUrl(context: Context, textProvider: () -> String) {
         val url = retrieveUrl(textProvider)
         val features = url.getFeaturesParams(UrlClassifierV2FeaturesExtruder)
         detectPhishing(url, context, features)
-        log<DetectionAccessibilityService>(textProvider)
+        logi<DetectionAccessibilityService>(textProvider)
     }
 
-    private fun detectSpam(context: Context, text: String) {
+    private suspend fun detectSpam(context: Context, text: String) {
         detectionScope {
             prepareData(context, text)
             detect(context, model = ModelVersions.SPAM_CLASSIFIER)
@@ -82,7 +97,7 @@ internal class DetectionAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun detectPhishing(url: URL, context: Context, features: LongArray) {
+    private suspend fun detectPhishing(url: URL, context: Context, features: LongArray) {
         detectionScope {
             prepareData(features)
             detect(context)

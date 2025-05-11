@@ -7,7 +7,7 @@ inline fun retrieveUrl(
     textBody: () -> String,
     pattern: String = """\b(?:https?:\/\/|www\.)\S+\b""",
 ): URL {
-    return URL(Regex(pattern).find(textBody())?.value)
+    return URL(Regex(pattern).find(textBody())?.value ?: "")
 }
 
 inline fun URL.countSymbol(symbolProvider: () -> Char) = this.toString()
