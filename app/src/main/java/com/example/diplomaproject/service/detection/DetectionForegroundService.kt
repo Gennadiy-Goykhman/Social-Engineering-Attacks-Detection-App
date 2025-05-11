@@ -12,12 +12,14 @@ import com.example.diplomaproject.data.utils.prepareData
 import com.example.diplomaproject.data.utils.retrieveUrl
 import com.example.diplomaproject.service.AnalyzingForegroundService
 import com.example.diplomaproject.service.utils.logi
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.TestOnly
 import java.net.URL
 
 class DetectionForegroundService : AnalyzingForegroundService<String>() {
@@ -25,7 +27,7 @@ class DetectionForegroundService : AnalyzingForegroundService<String>() {
     override val title get() = getString(R.string.detection_service_notification_title)
     override val description get() = getString(R.string.detection_service_notification_description)
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private var processingDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     override fun Intent.prepareForAnalyzing(): String = data.toString()
 
@@ -36,9 +38,14 @@ class DetectionForegroundService : AnalyzingForegroundService<String>() {
         logi<DetectionAccessibilityService>(dataProvider)
     }
 
+    @TestOnly
+    fun setupProcessingDispatcher(processingDispatcher: CoroutineDispatcher) {
+        this.processingDispatcher = processingDispatcher
+    }
+
     private fun detect(url: URL, context: Context, features: LongArray) {
         coroutineScope.launch(SupervisorJob()) {
-            detectionScope {
+            detectionScope(processingDispatcher) {
                 delay(2000)
                 prepareData(features)
                 detect(context)

@@ -8,12 +8,17 @@ import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.diplomaproject.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import org.jetbrains.annotations.TestOnly
 import kotlin.random.Random
 
 abstract class AnalyzingForegroundService<T>: Service() {
     abstract val channelId: String
     abstract val title: String
     abstract val description: String
+
+    protected var coroutineScope = CoroutineScope(Dispatchers.IO)
 
     private val serviceId = Random(Int.MAX_VALUE).nextInt()
 
@@ -33,6 +38,11 @@ abstract class AnalyzingForegroundService<T>: Service() {
 
     protected abstract fun Intent.prepareForAnalyzing(): T
     protected abstract fun analyze(dataProvider: () -> T)
+
+    @TestOnly
+    fun setupCoroutineScope(testCoroutineScope: CoroutineScope) {
+        coroutineScope = testCoroutineScope
+    }
 
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(

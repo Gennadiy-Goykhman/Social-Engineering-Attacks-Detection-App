@@ -18,10 +18,13 @@ import com.example.diplomaproject.data.services.spam.VocabularyProvider
 import com.example.diplomaproject.data.services.url.UrlDetectionService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 fun DetectionFlowScope.prepareData(context: Context, text: String) {
     val vocab = VocabularyProvider.getVocabulary(context)

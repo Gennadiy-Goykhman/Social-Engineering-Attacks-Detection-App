@@ -27,7 +27,6 @@ class PhoneCallsForegroundService : AnalyzingForegroundService<String>() {
     override val description get() = getString(R.string.calls_service_notification_description)
 
     private var recorder: MediaRecorder? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun Intent.prepareForAnalyzing(): String =
         getStringExtra("CALLER_PHONE_NUMBER") ?: throw RuntimeException("Unable to retrieve number")

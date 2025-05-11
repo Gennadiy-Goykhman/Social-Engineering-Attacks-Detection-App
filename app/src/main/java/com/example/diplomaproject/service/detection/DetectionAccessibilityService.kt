@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 import java.net.URL
 
 internal class DetectionAccessibilityService : AccessibilityService() {
@@ -31,9 +32,7 @@ internal class DetectionAccessibilityService : AccessibilityService() {
         const val MIN_MESSAGE_LENGTH = 10
     }
 
-
-
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
+    private var coroutineScope = CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
         loge<DetectionAccessibilityService> {
             """Exception occurred ${exception.message} 
                 |${exception.stackTraceToString()}
@@ -52,7 +51,7 @@ internal class DetectionAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event?.run {
-            text.joinToString { "" }.processText()
+            text.joinToString().processText()
             contentDescription?.toString()?.processText()
 
             source?.run {
@@ -103,6 +102,11 @@ internal class DetectionAccessibilityService : AccessibilityService() {
             detect(context)
             notifyResult(url, context)
         }
+    }
+
+    @TestOnly
+    fun setupCoroutineScope(testCoroutineScope: CoroutineScope) {
+        coroutineScope = testCoroutineScope
     }
 
     override fun onInterrupt() = Unit
