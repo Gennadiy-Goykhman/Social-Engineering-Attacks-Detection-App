@@ -68,17 +68,9 @@ class DetectionAccessibilityServiceTest {
         mockkStatic(URLUtil::class)
         every { URLUtil.isValidUrl(any()) } returns false
 
-        val service = DetectionAccessibilityService().apply {
-            setupCoroutineScope(this@runTest)
-        }
-
-        val serviceSpyk = spyk(service) {
-            every { assets } returns mockk<AssetManager>(relaxed = true)
-        }
-
-        val mockEvent = mockk<AccessibilityEvent>(relaxed = true) {
-            every { text } returns listOf(SCAM_MESSAGE)
-        }
+        val service = DetectionAccessibilityService().apply { setupCoroutineScope(this@runTest) }
+        val serviceSpyk = spyk(service) { every { assets } returns mockk<AssetManager>(relaxed = true) }
+        val mockEvent = mockk<AccessibilityEvent>(relaxed = true) { every { text } returns listOf(SCAM_MESSAGE) }
 
         var detectSpamCalled = false
         coEvery {  serviceSpyk["detectSpam"](any<Context>(), any<String>()) } answers {
@@ -91,13 +83,7 @@ class DetectionAccessibilityServiceTest {
 
         assertTrue(detectSpamCalled)
 
-        verify {
-            SpamDetectionService.detect(
-                model = any(),
-                data = any(),
-                context = any()
-            )
-        }
+        verify { SpamDetectionService.detect(model = any(), data = any(), context = any()) }
 
         unmockkStatic(URLUtil::class)
     }

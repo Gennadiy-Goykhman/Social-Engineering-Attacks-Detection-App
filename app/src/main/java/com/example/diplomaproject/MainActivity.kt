@@ -44,11 +44,11 @@ import com.example.diplomaproject.ui.theme.TextPrimary
 
 internal class MainActivity : ComponentActivity() {
 
-    private val permissions = listOf(
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.READ_CALL_LOG,
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.MODIFY_AUDIO_SETTINGS
+    private val permissions = listOf<String>(
+//        Manifest.permission.READ_PHONE_STATE,
+//        Manifest.permission.READ_CALL_LOG,
+//        Manifest.permission.RECORD_AUDIO,
+//        Manifest.permission.MODIFY_AUDIO_SETTINGS
     )
     private val permissionsHandler = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
