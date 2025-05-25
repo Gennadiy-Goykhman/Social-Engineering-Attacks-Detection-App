@@ -70,6 +70,8 @@
     public static <fields>;
 }
 
+-dontwarn javax.annotation.Nullable
+
 # Keep annotations (optional, remove for maximum obfuscation)
 -keepattributes *Annotation*
 

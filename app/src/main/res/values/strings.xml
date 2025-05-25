@@ -15,6 +15,7 @@
         contain vectors of attacks using scam, phishing, etc.\nThe application ensures its
         performance by evaluating the content with which the user interacts. Any information
         gathered in the process is not shared externally.</string>
+    <string name="enable_detection_service">Enable Detection Service in Accessibility to continue</string>
     <string name="additional_info_title">Additional info</string>
     <string name="licensing_item">Licensing</string>
     <string name="permissions_item">Permissions</string>
@@ -23,6 +24,8 @@
     <string name="detection_service_notification_title">Detecting phishing</string>
     <string name="detection_service_notification_description">Analyse an online resource for
         phishing attempts…</string>
+    <string name="calls_service_notification_title">Analyzing call…</string>
+    <string name="calls_service_notification_description">Analyse a call for scam attempt </string>
     <string name="attack_message_button">OK</string>
     <string name="attack_message_title">Warning of a possible attack</string>
     <string name="attack_message">You may be subject to the actions of malicious people.\nThe text
